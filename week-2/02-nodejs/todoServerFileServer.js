@@ -41,24 +41,42 @@
  */
 const express = require("express");
 const bodyParser = require("body-parser");
-
+const path = require("path");
+const fs = require("fs");
 const app = express();
 
 app.use(bodyParser.json());
 
-let todoList = [
-	{
-		id: 1,
-		title: "Workout",
-		completed: false,
-		description: "Finish workout in the morning.",
-	},
-];
+const readfile = (file) => {
+	let content = [];
+	const fullPath = path.join(__dirname, file);
+	fs.readFile(fullPath, "utf8", (err, data) => {
+		if (err) {
+			throw new Error("Cannot read the file..");
+		} else {
+			content = JSON.parse(data);
+		}
+	});
+	return content;
+};
 
+const writefile = (file, content) => {
+	const fullPath = path.join(__dirname, file);
+	fs.writeFile(fullPath, content, (err) => {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log("Write successfull...");
+		}
+	});
+};
+
+let data = readfile("/todos.json");
+console.log(data);
 app.get("/todos", (req, res) => {
 	let todo = [];
-	for (let i = 0; i < todoList.length; i++) {
-		todo.push(todoList[i].title);
+	for (let i = 0; i < data.length; i++) {
+		todo.push(data[i].title);
 	}
 	res.status(200).json(todo);
 });
@@ -67,10 +85,10 @@ app.get("/todos/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	let isId = true;
 	let currentTodo = {};
-	for (let i = 0; i < todoList.length; i++) {
-		if (todoList[i].id === id) {
+	for (let i = 0; i < data.length; i++) {
+		if (data[i].id === id) {
 			isId = true;
-			currentTodo = todoList[i];
+			currentTodo = data[i];
 			break;
 		} else {
 			isId = false;
@@ -88,31 +106,33 @@ app.post("/todos", (req, res) => {
 	const des = req.body.description;
 	const complete = req.body.completed;
 
-	todoList.push({
-		id: todoList.length + 1,
+	data.push({
+		id: data.length + 1,
 		title: ttl,
 		completed: complete,
 		description: des,
 	});
-	res.status(201).json({ id: todoList[todoList.length - 1].id });
+	writefile("/todos.json", JSON.stringify(data));
+	res.status(201).json({ id: data[data.length - 1].id });
 });
 
 app.put("/todos/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	let updatedTodo = {};
 	let isId = true;
-	for (let i = 0; i < todoList.length; i++) {
-		if (todoList[i].id === id) {
+	for (let i = 0; i < data.length; i++) {
+		if (data[i].id === id) {
 			isId = true;
-			todoList[i].title = req.body.title;
-			todoList[i].completed = req.body.completed;
-			updatedTodo = todoList[i];
+			data[i].title = req.body.title;
+			data[i].completed = req.body.completed;
+			updatedTodo = data[i];
 			break;
 		} else {
 			isId = false;
 		}
 	}
 	if (isId) {
+		writefile("/todos.json", JSON.stringify(data));
 		res.status(200).json(updatedTodo);
 	} else {
 		res.status(404).json({ message: "id doesn't exists" });
@@ -122,9 +142,9 @@ app.put("/todos/:id", (req, res) => {
 app.delete("/todos/:id", (req, res) => {
 	const id = parseInt(req.params.id);
 	let deleted = true;
-	for (let i = 0; i < todoList.length; i++) {
-		if (todoList[i].id === id) {
-			todoList.splice(i, 1);
+	for (let i = 0; i < data.length; i++) {
+		if (data[i].id === id) {
+			data.splice(i, 1);
 			deleted = true;
 			break;
 		} else {
@@ -132,6 +152,7 @@ app.delete("/todos/:id", (req, res) => {
 		}
 	}
 	if (deleted) {
+		writefile("/todos.json", JSON.stringify(data));
 		res.status(200).json({ message: "Todo deleted Successfully!" });
 	} else {
 		res.status(404).json({ message: "id doesn't exists" });

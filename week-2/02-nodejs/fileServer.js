@@ -12,6 +12,7 @@
     - For any other route not defined in the server return 404
     Testing the server - run `npm run test-fileServer` command in terminal
  */
+
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -21,23 +22,23 @@ const directory = __dirname;
 console.log(directory);
 
 app.get("/files", (req, res) => {
-  const fullPath = path.join(directory, "./files");
-  fs.readdir(fullPath, "utf-8", (err, data) => {
-    res.status(200).json(data);
-  });
+	const fullPath = path.join(directory, "./files");
+	fs.readdir(fullPath, "utf-8", (err, data) => {
+		res.status(200).json(data);
+	});
 });
 
 app.get("/file/:filename", (req, res) => {
-  const filename = req.params.filename;
-  let fullPath = path.join(directory, "./files", filename);
-  fs.readFile(fullPath, "utf-8", (err, data) => {
-    if (err) {
-      res.sendStatus(404);
-      console.log("error!");
-      return;
-    }
-    res.status(200).send(data);
-  });
+	const filename = req.params.filename;
+	let fullPath = path.join(directory, "./files", filename);
+	fs.readFile(fullPath, "utf-8", (err, data) => {
+		if (err) {
+			res.status(404).send("File not found");
+			console.log("error!");
+			return;
+		}
+		res.status(200).send(data);
+	});
 });
 
 app.listen(3000);
