@@ -1,4 +1,3 @@
-import { Card } from "./components/Card";
 import { CreateCard } from "./components/CreateCard";
 
 function App() {
