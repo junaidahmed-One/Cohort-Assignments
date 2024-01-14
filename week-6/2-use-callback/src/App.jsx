@@ -1,14 +1,17 @@
-import './App.css'
-import { Assignment1 } from './components/Assignment1'
-import { Assignment2 } from './components/Assignment2'
+import { useState } from "react";
+import "./App.css";
+import { Assignment1 } from "./components/Assignment1";
+import { Assignment2 } from "./components/Assignment2";
 
 function App() {
-  return (
-    <>
-      {/* <Assignment1 /> */}
-      <Assignment2 />
-    </>
-  )
+	const [count, setCount] = useState(0);
+	return (
+		<>
+			<button onClick={() => setCount(count + 1)}>Counter {count}</button>
+			{/* <Assignment1 /> */}
+			<Assignment2 />
+		</>
+	);
 }
 
-export default App
+export default App;
