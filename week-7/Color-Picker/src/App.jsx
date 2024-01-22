@@ -1,10 +1,12 @@
-import { useState } from "react";
 import "./App.css";
+import { ColorDisplay } from "./components/ColorDisplay";
 
 function App() {
-	const [count, setCount] = useState(0);
-
-	return <></>;
+	return (
+		<div>
+			<ColorDisplay />
+		</div>
+	);
 }
 
 export default App;
