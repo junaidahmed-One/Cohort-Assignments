@@ -9,6 +9,7 @@ export const AppBar = atom({
 	},
 });
 
+//if the values need to be set dynamically, then atom default is made as selector, like below.
 export const AsynchronousDataQueries = atom({
 	key: "asynchronousdq",
 	default: selector({
